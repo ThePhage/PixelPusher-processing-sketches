@@ -23,7 +23,7 @@ void setup() {
   registry.setAntiLog(true);
   registry.setFrameLimit(1000);
   frameRate(1000);
-  
+
   // get a file to draw.
   
   try { 
@@ -31,34 +31,37 @@ void setup() {
   } catch (Exception e) { 
     e.printStackTrace();  
   } 
-   
-  // create a file chooser 
-  final JFileChooser fc = new JFileChooser(); 
-   
-  // in response to a button click: 
-  int returnVal = fc.showOpenDialog(this); 
-   
-  if (returnVal == JFileChooser.APPROVE_OPTION) { 
-    File file = fc.getSelectedFile(); 
-    // see if it's an image 
-    // (better to write a function and check for all supported extensions) 
-    // load the image using the given file path
-    myImage = loadImage(file.getPath());
-    image(myImage,0,0);
-    size(myImage.width, myImage.height);
-  } else { 
-    println("Open command cancelled by user."); 
-    exit();
-  }
-  image(myImage,0,0);
-  
+
+  // see if it's an image 
+  // (better to write a function and check for all supported extensions) 
+  // load the image using the given file path
+  myImage = loadImage("31280014-All-seeing-eye-symbol-vector-illustration-Stock-Vector.jpg");
+  size(myImage.width, myImage.height);
 }
 
-
-
-
 void draw() {
-  scrape(xpos++);
+  xpos++;
+  image(myImage,0,0);
+
+  // scrape for the strips
+  if (testObserver.hasStrips) {
+    registry.startPushing();
+    List<Strip> strips = registry.getStrips();
+    // for only one strip:
+    Strip strip1=strips.get(0);
+    Strip strip2=strips.get(1);
+    int stripy=0;
+    float ystep = height / strip1.getLength();
+    if (ystep == 0) {
+      ystep = 1;
+    }
+    
+    for (float y=0; y<height; y+=ystep) {
+      int pixel = get(xpos,int(y));
+      strip1.setPixel(pixel, stripy++);
+      strip2.setPixel(pixel, stripy++);
+    }
+  }
   if (xpos == width)
     xpos = 0;
 }
